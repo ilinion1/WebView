@@ -8,18 +8,20 @@ import android.webkit.WebView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.edit
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.example.webview.R
 import com.example.webview.data.netwok.api.ApiFactory
 import com.example.webview.databinding.ActivityMainBinding
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
     private val compositeDisposable = CompositeDisposable()
     private lateinit var binding: ActivityMainBinding
-
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,12 +32,14 @@ class MainActivity : AppCompatActivity() {
         checkFirstStart(linkKey)
     }
 
-    fun checkFirstStart(linkKey: SharedPreferences) {
-        val user= getSharedPreferences("hasVisited", Context.MODE_PRIVATE)
+    private fun checkFirstStart(linkKey: SharedPreferences) {
+        val user = getSharedPreferences("hasVisited", Context.MODE_PRIVATE)
         val visited = user.getBoolean("hasVisited", false)
         if (!visited) {
             user.edit().putBoolean("hasVisited", true).apply()
-            disposable(linkKey)
+            lifecycleScope.launch {
+                disposable(linkKey)
+            }
         } else {
             if (!linkKey.getBoolean("link", false)) {
                 getFragment(WebViewFragment())
@@ -53,7 +57,7 @@ class MainActivity : AppCompatActivity() {
             .subscribe(
                 {
                     if (it.args?.key == null) {
-                        linkKey.edit{putBoolean("link", false)}
+                        linkKey.edit { putBoolean("link", false) }
                         getFragment(WebViewFragment())
                     } else {
                         linkKey.edit().putBoolean("link", true).apply()
@@ -66,7 +70,7 @@ class MainActivity : AppCompatActivity() {
         compositeDisposable.add(disposable)
     }
 
-    fun getFragment(fragment: Fragment){
+    fun getFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()
             .replace(R.id.frag_container, fragment)
             .commit()
