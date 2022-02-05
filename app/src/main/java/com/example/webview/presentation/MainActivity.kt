@@ -51,7 +51,7 @@ class MainActivity : AppCompatActivity() {
 
 
     fun disposable(linkKey: SharedPreferences) {
-        val disposable = ApiFactory.apiService.getLinkHaveKey()
+        val disposable = ApiFactory.apiService.getEmptyLink()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(

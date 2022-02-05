@@ -4,6 +4,14 @@ plugins {
 }
 
 android {
+    signingConfigs {
+        release {
+            storeFile file('C:\\Users\\user\\Desktop\\testKey.jks')
+            storePassword '1Katetor1'
+            keyAlias 'ilinion1'
+            keyPassword '1Katetor1'
+        }
+    }
     compileSdk 32
 
     defaultConfig {
